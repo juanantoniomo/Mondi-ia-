@@ -1,0 +1,10 @@
+MONDI AI 2.9 — Compilación Android independiente
+
+GitHub Actions usa JDK 17, Android SDK 35, Build Tools 35.0.0 y Gradle 8.9.
+Compilación de pruebas: gradle --no-daemon clean assembleDebug
+Salida: app/build/outputs/apk/debug/app-debug.apk (firma debug; no usar para actualizar instalaciones de publicación).
+
+Con los cuatro secretos de firma indicados en ACTUALIZACIONES.md, la acción ejecuta assembleRelease y publica:
+app/build/outputs/apk/release/app-release.apk
+
+La misma clave de publicación debe conservarse para todas las versiones; perderla impide actualizar sobre la instalación existente. No se usa Google Colab.

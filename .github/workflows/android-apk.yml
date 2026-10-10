@@ -1,39 +1,76 @@
-name: Compilar APK MONDI AI
+name: Compilar MONDI AI para Android
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
 permissions:
   contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      MONDI_SIGNING_KEYSTORE_BASE64: ${{ secrets.MONDI_SIGNING_KEYSTORE_BASE64 }}
+      MONDI_KEYSTORE_PASSWORD: ${{ secrets.MONDI_KEYSTORE_PASSWORD }}
+      MONDI_KEY_ALIAS: ${{ secrets.MONDI_KEY_ALIAS }}
+      MONDI_KEY_PASSWORD: ${{ secrets.MONDI_KEY_PASSWORD }}
+      MONDI_KEYSTORE_PATH: ${{ runner.temp }}/mondi-release.jks
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
+
       - uses: android-actions/setup-android@v4
         with:
           packages: platform-tools
+
       - name: Instalar Android SDK 35
         run: sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
-      - name: Compilar APK de prueba
+
+      - name: Comprobar y preparar firma persistente
+        id: signing
+        shell: bash
+        run: |
+          if [[ -n "$MONDI_SIGNING_KEYSTORE_BASE64" && -n "$MONDI_KEYSTORE_PASSWORD" && -n "$MONDI_KEY_ALIAS" && -n "$MONDI_KEY_PASSWORD" ]]; then
+            echo "$MONDI_SIGNING_KEYSTORE_BASE64" | base64 --decode > "$MONDI_KEYSTORE_PATH"
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "No se configuró la firma persistente; solo se generará una APK debug, no apta para actualizar la versión instalada conservando datos."
+          fi
+
+      - name: Compilar APK debug para pruebas
         run: gradle --no-daemon clean assembleDebug
-      - uses: actions/upload-artifact@v4
+
+      - name: Compilar APK release firmada
+        if: steps.signing.outputs.ready == 'true'
+        run: gradle --no-daemon assembleRelease
+
+      - name: Guardar APK de pruebas
+        uses: actions/upload-artifact@v4
         with:
-          name: MONDI-AI-2.7-debug-APK
+          name: MONDI-AI-2.9-debug-pruebas
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
-      - name: Publicar APK para descarga directa
+
+      - name: Publicar APK instalable y actualizable
+        if: steps.signing.outputs.ready == 'true'
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: apk-debug-${{ github.run_number }}
-          name: MONDI AI 2.7 - APK de prueba
-          body: APK de depuración de MONDI AI. Descarga app-debug.apk e instálala en Android 8.0 o posterior.
-          prerelease: true
-          files: app/build/outputs/apk/debug/app-debug.apk
+          tag_name: mondi-v2.9-${{ github.run_number }}
+          name: MONDI AI 2.9
+          body: >-
+            APK Android de MONDI AI 2.9, firmada con la clave persistente del proyecto.
+            Si la versión instalada tiene el mismo certificado, Android permite instalar
+            esta actualización encima y conserva los datos de la aplicación.
+          prerelease: false
+          files: app/build/outputs/apk/release/app-release.apk

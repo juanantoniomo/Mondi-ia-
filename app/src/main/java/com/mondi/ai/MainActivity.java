@@ -31,9 +31,10 @@ public class MainActivity extends Activity {
   if(m.isEmpty()){append("MONDI: Falta el modelo Gemini.");return;}
   if(!base.startsWith("https://generativelanguage.googleapis.com/")){append("MONDI: La URL debe ser la URL base de Gemini: https://generativelanguage.googleapis.com/v1beta");return;}
   String url=base.replaceAll("/+$","")+"/models/"+m+":generateContent";
+  final String apiKey=k;
   new Thread(()->{HttpURLConnection c=null;try{
    c=(HttpURLConnection)new URL(url).openConnection();c.setRequestMethod("POST");c.setConnectTimeout(20000);c.setReadTimeout(60000);c.setDoOutput(true);
-   c.setRequestProperty("Content-Type","application/json; charset=utf-8");c.setRequestProperty("x-goog-api-key",k);
+   c.setRequestProperty("Content-Type","application/json; charset=utf-8");c.setRequestProperty("x-goog-api-key",apiKey);
    JSONObject req=new JSONObject();JSONArray contents=new JSONArray();JSONArray systemParts=new JSONArray();systemParts.put(new JSONObject().put("text","Eres MONDI AI, asistente personal en español. Sé útil, claro y seguro."));req.put("systemInstruction",new JSONObject().put("parts",systemParts));
    synchronized(conversation){for(int j=Math.max(0,conversation.length()-16);j<conversation.length();j++){JSONObject old=conversation.getJSONObject(j);String role="assistant".equals(old.optString("role"))?"model":"user";JSONArray parts=new JSONArray();parts.put(new JSONObject().put("text",old.optString("content","")));contents.put(new JSONObject().put("role",role).put("parts",parts));}}
    JSONArray userParts=new JSONArray();userParts.put(new JSONObject().put("text",msg));contents.put(new JSONObject().put("role","user").put("parts",userParts));req.put("contents",contents);

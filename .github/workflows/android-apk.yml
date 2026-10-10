@@ -45,7 +45,7 @@ jobs:
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "No se configuró la firma persistente; solo se generará una APK debug, no apta para actualizar la versión instalada conservando datos."
+            echo "No se configuró la firma persistente; se generará una APK debug instalable, pero no podrá actualizar una instalación con otra firma." 
           fi
 
       - name: Compilar APK debug para pruebas
@@ -62,15 +62,13 @@ jobs:
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
 
-      - name: Publicar APK instalable y actualizable
-        if: steps.signing.outputs.ready == 'true'
+      - name: Publicar APK directamente descargable
         uses: softprops/action-gh-release@v3
         with:
           tag_name: mondi-v2.9-${{ github.run_number }}
           name: MONDI AI 2.9
           body: >-
-            APK Android de MONDI AI 2.9, firmada con la clave persistente del proyecto.
-            Si la versión instalada tiene el mismo certificado, Android permite instalar
-            esta actualización encima y conserva los datos de la aplicación.
-          prerelease: false
-          files: app/build/outputs/apk/release/app-release.apk
+            APK para instalar. Si no hay firma persistente configurada, se publica una APK
+            debug; Android puede exigir desinstalar la versión anterior si tiene otra firma.
+          prerelease: ${{ steps.signing.outputs.ready != 'true' }}
+          files: ${{ steps.signing.outputs.ready == 'true' && 'app/build/outputs/apk/release/app-release.apk' || 'app/build/outputs/apk/debug/app-debug.apk' }}

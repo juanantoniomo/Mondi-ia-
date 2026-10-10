@@ -1,30 +1,33 @@
-# MONDI AI
+# MONDI AI 2.9
 
-Primera versión Android de MONDI AI como proyecto independiente de CifraChat. Genera una APK de depuración automáticamente en GitHub Actions; no requiere Google Colab ni Android Studio en tu ordenador.
+Aplicación Android independiente de CifraChat. Mantiene el paquete `com.mondi.ai` y sube `versionCode` a 30 para que Android reconozca la versión como actualización.
 
-## Descargar e instalar
+## Funciones
 
-1. Abre [Compilar APK MONDI AI en GitHub Actions](https://github.com/juanantoniomo/Mondi-ia-/actions/workflows/android-apk.yml) y selecciona la ejecución más reciente que aparezca en verde.
-2. En Artifacts, descarga MONDI-AI-2.7-debug-APK.zip. Descomprímelo y copia app-debug.apk a tu teléfono.
-3. Abre la APK. Si Android lo solicita, permite instalar aplicaciones desde el navegador o gestor de archivos que estés usando.
+- Chat con proveedores que ofrecen una API compatible con OpenAI.
+- Dictado por voz que envía el mensaje reconocido y lectura automática o repetición de respuestas.
+- Búsqueda web, marcador telefónico y selección de contactos.
+- Terminal Android local, editor privado y ejecución confirmada de scripts `.sh`.
+- Catálogo de ejemplos de programación y guía para instalar Ubuntu mediante Termux/proot-distro.
+- Consulta de versiones publicadas en GitHub Releases.
 
-La compilación se ejecuta en cada cambio en main. Requisitos del teléfono: Android 8.0 o posterior. Es una APK de depuración para pruebas, no una versión firmada para publicar en Google Play.
+El chat necesita una URL HTTPS compatible, el nombre de un modelo y una clave API del proveedor. No incluye un modelo ni una clave; el servicio elegido puede cobrar. La clave solo se conserva durante la sesión. Ubuntu requiere Termux y proot-distro aparte.
 
-## Qué incluye esta primera versión
+## Actualizaciones sin desinstalar
 
-- Aplicación Android con nombre y paquete propios: MONDI AI / com.mondi.ai.
-- Interfaz de chat y conversación en memoria.
-- Conexión HTTPS a servicios compatibles con la API de chat de OpenAI.
-- Configuración de URL y modelo guardada localmente. La clave API se solicita al usar la app y no se guarda.
+Android actualiza una app sobre la existente cuando coinciden el paquete (`com.mondi.ai`), la firma digital y el `versionCode` nuevo es mayor. Esta versión conserva el paquete y sube el código de versión a 30. Las compilaciones de actualización deben usar siempre el mismo almacén de firma privado.
 
-Para conversar necesitas conexión a Internet, una URL de API compatible que termine en /chat/completions, un modelo disponible para tu proveedor y una clave válida. El proveedor puede cobrar por su uso.
+El flujo de GitHub Actions guarda la clave como Secrets del repositorio; nunca se debe subir el archivo `.jks` ni la contraseña al repositorio público. Hay que configurar una sola vez `MONDI_SIGNING_KEYSTORE_BASE64`, `MONDI_KEYSTORE_PASSWORD`, `MONDI_KEY_ALIAS` y `MONDI_KEY_PASSWORD`. Después, cada publicación de la APK `app-release.apk` se podrá instalar encima y mantener los datos. Android seguirá pidiendo confirmar la instalación.
 
-Esta es una base funcional de chat. Todavía no incorpora las funciones ampliadas del paquete MONDI 2.7 (voz, terminal Linux, actualizador u otras herramientas); se pueden añadir después sobre este proyecto separado.
+La APK debug de pruebas no sirve para publicar actualizaciones: su firma no es persistente. Si la app instalada se firmó con una clave debug anterior, no se puede garantizar la actualización sobre ella sin recuperar esa clave original; en ese caso habrá que hacer una única transición a la APK firmada de publicación. Las actualizaciones siguientes ya usarán la misma firma persistente.
 
-## Compilar
+## Compilación
 
-GitHub Actions compila la APK con Android SDK 35, Java 17 y Gradle 8.9. Para compilar localmente, instala esos requisitos y ejecuta:
+GitHub Actions compila con Java 17, Android SDK 35 y Gradle 8.9. Sin secretos de firma solo guarda una APK debug de pruebas y no publica una APK como actualización.
 
-    gradle --no-daemon clean assembleDebug
+```sh
+gradle --no-daemon clean assembleDebug
+```
 
-La APK queda en app/build/outputs/apk/debug/app-debug.apk.
+APK debug: `app/build/outputs/apk/debug/app-debug.apk`  
+APK de publicación firmada: `app/build/outputs/apk/release/app-release.apk`

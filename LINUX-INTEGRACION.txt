@@ -1,0 +1,12 @@
+MONDI AI — Linux en Android
+
+MONDI incluye una guía y accesos para usar Termux; no lleva Ubuntu ni un sistema Linux completo dentro de la APK.
+
+1. Instala Termux desde F-Droid.
+2. Abre Termux y ejecuta:
+   pkg update && pkg upgrade -y
+   pkg install proot-distro -y
+   proot-distro install ubuntu
+   proot-distro login ubuntu
+
+Ubuntu funciona en un entorno proot de espacio de usuario. No da root real ni control ilimitado del teléfono. Los comandos de Linux se ejecutan dentro de Termux, no en la terminal Android de MONDI.

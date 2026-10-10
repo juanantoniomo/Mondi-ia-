@@ -1,0 +1,11 @@
+# Android / Gradle
+.gradle/
+build/
+**/build/
+local.properties
+*.iml
+.idea/
+
+# Signing material must stay outside the public repository
+*.jks
+*.keystore

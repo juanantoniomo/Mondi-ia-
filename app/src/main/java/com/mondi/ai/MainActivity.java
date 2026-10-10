@@ -18,7 +18,15 @@ public class MainActivity extends Activity {
  void append(String s){runOnUiThread(()->chat.append(s+"\n\n"));}
  void send(){
   String msg=input.getText().toString().trim();if(msg.isEmpty())return;input.setText("");append("TÚ: "+msg);
-  String base=endpoint.getText().toString().trim(),m=model.getText().toString().trim(),k=key.getText().toString().trim();
+  String base=endpoint.getText().toString().trim(),m=model.getText().toString().trim(),rawKey=key.getText().toString().trim(),k=rawKey;
+  if(rawKey.toLowerCase(Locale.ROOT).contains("curl")||rawKey.toLowerCase(Locale.ROOT).contains("x-goog-api-key")){
+   String lower=rawKey.toLowerCase(Locale.ROOT);int hp=lower.indexOf("x-goog-api-key:");
+   if(hp>=0){int ks=hp+"x-goog-api-key:".length();while(ks<rawKey.length()&&(rawKey.charAt(ks)==' '||rawKey.charAt(ks)=='\t'||rawKey.charAt(ks)=='\''||rawKey.charAt(ks)=='"'))ks++;int ke=ks;while(ke<rawKey.length()&&!Character.isWhitespace(rawKey.charAt(ke))&&rawKey.charAt(ke)!='\''&&rawKey.charAt(ke)!='"')ke++;k=rawKey.substring(ks,ke);}
+   String marker="https://generativelanguage.googleapis.com/";int up=rawKey.indexOf(marker);
+   if(up>=0){int us=up+marker.length(),ue=us;while(ue<rawKey.length()&&!Character.isWhitespace(rawKey.charAt(ue))&&rawKey.charAt(ue)!='\''&&rawKey.charAt(ue)!='"')ue++;String path=rawKey.substring(us,ue);String modelMark="/models/";int mp=path.indexOf(modelMark);if(mp>=0){String modelPath=path.substring(mp+modelMark.length());int me=modelPath.indexOf(':');if(me>=0)modelPath=modelPath.substring(0,me);if(!modelPath.isEmpty())m=modelPath;}base="https://generativelanguage.googleapis.com/v1beta";endpoint.setText(base);model.setText(m);getPreferences(0).edit().putString("url",base).putString("model",m).apply();}
+   if(k.equals(rawKey)){append("MONDI: No pude extraer la clave del comando. Pega solo la clave API de Google AI Studio, no todo el comando curl.");return;}
+   key.setText(k);toast("Comando curl detectado: he separado clave, URL y modelo.");
+  }
   if(k.isEmpty()){append("MONDI: Pulsa «Crear clave gratis de Gemini» y crea una clave en Google AI Studio. Pégala aquí; no la envíes por chat.");return;}
   if(m.isEmpty()){append("MONDI: Falta el modelo Gemini.");return;}
   if(!base.startsWith("https://generativelanguage.googleapis.com/")){append("MONDI: La URL debe ser la URL base de Gemini: https://generativelanguage.googleapis.com/v1beta");return;}

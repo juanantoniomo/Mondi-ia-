@@ -8,8 +8,8 @@ android {
         minSdk = 26
         targetSdk = 35
         // Debe ser mayor que el versionCode de cada APK MONDI ya instalada.
-        versionCode = 30
-        versionName = "2.9"
+        versionCode = 31
+        versionName = "3.0"
     }
 
     // La clave se inyecta desde GitHub Actions Secrets y nunca se guarda en el repo.

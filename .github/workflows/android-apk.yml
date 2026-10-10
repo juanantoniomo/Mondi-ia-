@@ -16,7 +16,7 @@ jobs:
       MONDI_KEYSTORE_PASSWORD: ${{ secrets.MONDI_KEYSTORE_PASSWORD }}
       MONDI_KEY_ALIAS: ${{ secrets.MONDI_KEY_ALIAS }}
       MONDI_KEY_PASSWORD: ${{ secrets.MONDI_KEY_PASSWORD }}
-      MONDI_KEYSTORE_PATH: ${{ runner.temp }}/mondi-release.jks
+      MONDI_KEYSTORE_PATH: mondi-release.jks
     steps:
       - uses: actions/checkout@v4
 

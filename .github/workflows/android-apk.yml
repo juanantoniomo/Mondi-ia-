@@ -58,7 +58,7 @@ jobs:
       - name: Guardar APK de pruebas
         uses: actions/upload-artifact@v4
         with:
-          name: MONDI-AI-3.4-debug-pruebas
+          name: MONDI-AI-3.5-debug-pruebas
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
 
@@ -66,10 +66,10 @@ jobs:
         if: steps.signing.outputs.ready == 'true'
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: mondi-v3.4-${{ github.run_number }}
-          name: MONDI AI 3.4
+          tag_name: mondi-v3.5-${{ github.run_number }}
+          name: MONDI AI 3.5
           body: >-
-            APK de publicación firmada con la clave persistente MONDI. VersionCode=35.
+            APK de publicación firmada con la clave persistente MONDI. VersionCode=36.
             Para instalar encima, la APK instalada debe tener exactamente el mismo certificado.
           prerelease: false
           files: app/build/outputs/apk/release/app-release.apk

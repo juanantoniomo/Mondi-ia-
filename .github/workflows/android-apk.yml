@@ -20,6 +20,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Preparar el código MONDI AI 3.2
+        run: |
+          mkdir -p "$RUNNER_TEMP/mondi-source"
+          unzip -oq MONDI-AI-3.2-proyecto-actualizado.zip -d "$RUNNER_TEMP/mondi-source"
+          cp -a "$RUNNER_TEMP/mondi-source/mondi-ai/." "$GITHUB_WORKSPACE/"
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -45,7 +51,7 @@ jobs:
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "No hay firma persistente. Se compilará solo la APK de prueba como artefacto; no se publicará como actualización."
+            echo "No hay firma persistente. Se guardará una APK debug de pruebas; no se publicará como actualización."
           fi
 
       - name: Compilar APK debug para pruebas
@@ -58,7 +64,7 @@ jobs:
       - name: Guardar APK de pruebas
         uses: actions/upload-artifact@v4
         with:
-          name: MONDI-AI-3.1-debug-pruebas
+          name: MONDI-AI-3.2-debug-pruebas
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
 
@@ -66,10 +72,10 @@ jobs:
         if: steps.signing.outputs.ready == 'true'
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: mondi-v3.1-${{ github.run_number }}
-          name: MONDI AI 3.1
+          tag_name: mondi-v3.2-${{ github.run_number }}
+          name: MONDI AI 3.2
           body: >-
-            APK de publicación firmada con la clave persistente MONDI. VersionCode=32.
+            APK de publicación firmada con la clave persistente MONDI. VersionCode=33.
             Para instalar encima, la APK instalada debe tener exactamente el mismo certificado.
           prerelease: false
           files: app/build/outputs/apk/release/app-release.apk

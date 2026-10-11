@@ -1,9 +1,12 @@
 # Actualizaciones de MONDI AI
 
-La APK 3.4 usa el paquete `com.mondi.ai`, `versionCode` 35 y la clave de firma persistente de MONDI. El comprobador busca publicaciones estables, ignora versiones preliminares y ofrece la APK release cuyo `versionCode` sea superior al instalado.
+## MONDI AI 3.5 — versión 36
 
-Antes de instalar, MONDI verifica el paquete, la versión, la firma y el SHA-256 cuando GitHub lo proporciona. Android presenta la confirmación final de instalación.
+- Pantalla con contraste más claro, tarjetas delimitadas y texto más legible.
+- Acciones rápidas y herramientas en cuadrícula para que se vean sin desplazamiento horizontal.
+- Interruptores persistentes para ampliar el texto y activar o desactivar la lectura automática de las respuestas.
+- Campo de mensaje multilínea y botones más grandes.
 
-La APK 3.3 entregada anteriormente tiene un certificado distinto de la clave persistente. Android no permite actualizar entre certificados distintos: para pasar a 3.4 hay que desinstalar la 3.3 e instalar 3.4 una vez. La desinstalación puede borrar los datos locales de la app; conserva antes lo que necesites. Después de esa migración, las actualizaciones con la misma firma se instalan encima.
+La app mantiene `com.mondi.ai` y la firma persistente de MONDI. El comprobador busca publicaciones estables con `app-release.apk`, valida paquete, versión, firma y SHA-256 cuando GitHub lo proporciona. Android presenta la confirmación final de instalación.
 
-La clave privada no se guarda en el repositorio. GitHub Actions publica una APK release únicamente cuando están configurados los secretos `MONDI_SIGNING_KEYSTORE_BASE64`, `MONDI_KEYSTORE_PASSWORD`, `MONDI_KEY_ALIAS` y `MONDI_KEY_PASSWORD`. Las APK debug son solo para pruebas y no sirven para actualizar la versión release.
+La APK 3.3 anterior tiene una firma distinta. Si aún está instalada, hace falta la migración única que se describió en la publicación 3.4; después las versiones de MONDI se actualizan desde la app.

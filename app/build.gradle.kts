@@ -8,8 +8,8 @@ android {
         minSdk = 26
         targetSdk = 35
         // Debe ser mayor que el versionCode de cada APK MONDI ya instalada.
-        versionCode = 31
-        versionName = "3.0"
+        versionCode = 32
+        versionName = "3.1"
     }
 
     // La clave se inyecta desde GitHub Actions Secrets y nunca se guarda en el repo.
@@ -29,7 +29,8 @@ android {
         getByName("release") {
             val signingReady = listOf("MONDI_KEYSTORE_PATH", "MONDI_KEYSTORE_PASSWORD", "MONDI_KEY_ALIAS", "MONDI_KEY_PASSWORD")
                 .all { !System.getenv(it).isNullOrBlank() }
-            if (signingReady) signingConfig = signingConfigs.getByName("release")
+            if (!signingReady) throw GradleException("Falta configurar la firma persistente MONDI para compilar una APK release.")
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
         }
     }

@@ -16,7 +16,9 @@ android {
     signingConfigs {
         create("release") {
             val keystorePath = System.getenv("MONDI_KEYSTORE_PATH")
-            if (!keystorePath.isNullOrBlank()) {
+            val signingReady = listOf("MONDI_KEYSTORE_PATH", "MONDI_KEYSTORE_PASSWORD", "MONDI_KEY_ALIAS", "MONDI_KEY_PASSWORD")
+                .all { !System.getenv(it).isNullOrBlank() }
+            if (signingReady && !keystorePath.isNullOrBlank()) {
                 storeFile = file(keystorePath)
                 storePassword = System.getenv("MONDI_KEYSTORE_PASSWORD")
                 keyAlias = System.getenv("MONDI_KEY_ALIAS")
@@ -29,8 +31,7 @@ android {
         getByName("release") {
             val signingReady = listOf("MONDI_KEYSTORE_PATH", "MONDI_KEYSTORE_PASSWORD", "MONDI_KEY_ALIAS", "MONDI_KEY_PASSWORD")
                 .all { !System.getenv(it).isNullOrBlank() }
-            if (!signingReady) throw GradleException("Falta configurar la firma persistente MONDI para compilar una APK release.")
-            signingConfig = signingConfigs.getByName("release")
+            if (signingReady) signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
         }
     }
